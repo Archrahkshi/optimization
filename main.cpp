@@ -42,8 +42,8 @@ double integrate_omp_parallel(double a, double b, unsigned n, integrand_t f, int
 
 void print_results(double result1, double result2, long num_ns, double num_ticks) {
     // Printing both result1 and result2 so that they are not optimized by GCC
-    cout << "Result: " << result1 << " / " << result2 << '\n'
-         << "Time: " << num_ns << " ns (" << num_ticks << " ticks)\n";
+    cout << " Result: " << result1 << " / " << result2 << '\n'
+         << " Time: " << num_ns << " ns (" << num_ticks << " ticks)\n";
 }
 
 void measure_execution_time(
@@ -102,11 +102,14 @@ int main(int argc, char **argv) {
     unsigned n = stoi(argv[3]);
     integrand_t f = [](double x) { return x * x; };
 
-    for (function integral: {integrate_plain, integrate_omp_simd})
-        measure_execution_time(integral, a, b, n, f);
-
-    for (int num_threads = 1; num_threads <= 6; ++num_threads)
+    cout << "PLAIN:\n";
+    measure_execution_time(integrate_plain, a, b, n, f);
+    cout << "SIMD:\n";
+    measure_execution_time(integrate_omp_simd, a, b, n, f);
+    for (int num_threads = 1; num_threads <= 6; ++num_threads) {
+        cout << "PARALLEL (" << num_threads << " THREADS):\n";
         measure_execution_time(integrate_omp_parallel, a, b, n, f, num_threads);
+    }
 
     return EXIT_SUCCESS;
 }
